@@ -1,0 +1,22 @@
+{
+  "name": "skull-king-online",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jest": "^29.7.0",
+    "skull-king-online": "file:",
+    "uuid": "^11.0.5",
+    "ws": "^8.18.0"
+  }
+}

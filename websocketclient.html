@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="game-join-form">
+        <form id="create-form">
+            <label for="name">Nom :</label>
+            <input type="text" id="name-create" name="name" /><br /><br />
+            <button type="submit" id="createRoom">Créer une partie</button><br /><br />
+        </form>
+
+        <form id="join-form">
+            <label for="name">Nom :</label>
+            <input type="text" id="name-join" name="name" /><br /><br />
+            <label for="room">Code partie :</label>
+            <input type="text" id="room-join" name="room" /><br /><br />
+            <button type="submit" id="joinRoom">
+                Rejoindre une partie
+            </button>
+        </form>
+    </div>
+    <div id="game-chat-form" class="hidden">
+        <form id="chat-form">
+            <label for="chat-message">Enter Message:</label>
+            <input type="text" id="chat-message" name="chat-message" /><br /><br />
+            <button type="submit" id="sendChat">
+                Envoyer
+            </button>        
+        </form>
+        <div id="messages"></div>
+    </div>
+
+    <div id="party"></div>
+
+    <div id="players-list"></div>
+
+    <script>
+        const webSocket = new WebSocket("ws://localhost:8080/");
+        let player = null;
+        webSocket.onmessage = (sentData) => {
+            console.log(sentData);
+            const parsedData = JSON.parse(sentData.data);
+            const { event, data } = parsedData;
+
+            player = data.player;
+            senderPlayer = data.senderPlayer;
+
+            if (event === "createRoom") {
+                console.log("[CLIENT] " + event + " - " + player.roomId);
+                document.getElementById("party").innerHTML += "Le code de partie est : " + player.roomId + "<br>";
+                document.getElementById("players-list").innerHTML += player.username + "<br>";
+            } else if (event === "joinRoom") {
+                console.log("[CLIENT] " + event + " - " + data.roomId);
+                document.getElementById("party").innerHTML = "Le code de partie est : " + player.roomId + "<br>";
+                document.getElementById("players-list").innerHTML = "";
+                data.room.players.forEach(p => {
+                    document.getElementById("players-list").innerHTML += p.username ;
+                    if(p.host){
+                        document.getElementById("players-list").innerHTML += `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg> `
+                    }
+                    document.getElementById("players-list").innerHTML += "<br>" ;
+                });
+            } else if (event === "sendChat") {
+                console.log(event);
+                document.getElementById("messages").innerHTML +=
+                    data.senderPlayer.username + " : " + data.sendChat + "<br>";
+            }
+        };
+
+        webSocket.addEventListener("open", () => {
+            console.log("We are connected");
+        });
+
+        function createRoom(event) {
+            event.preventDefault();
+            player = {
+                host: true,
+                roomId: null,
+                username: document.getElementById("name-create").value,
+                socketId: "",
+                turn: false,
+                win: false,
+                ws: null,
+            };
+            webSocket.send(
+                JSON.stringify({
+                    event: "createRoom",
+                    data: { player: player },
+                })
+            );
+
+            document
+                .getElementById("game-join-form")
+                .classList.add("hidden");
+            document
+                .getElementById("game-chat-form")
+                .classList.remove("hidden");
+            document
+                .getElementById("game-chat-form")
+                .classList.add("visible");
+        }
+
+        function joinRoom(event) {
+            event.preventDefault();
+            player = {
+                host: false,
+                roomId: document.getElementById("room-join").value,
+                username: document.getElementById("name-join").value,
+                socketId: "",
+                turn: false,
+                win: false,
+                ws: null,
+            };
+            webSocket.send(
+                JSON.stringify({
+                    event: "joinRoom",
+                    data: { player: player },
+                })
+            );
+
+            document
+                .getElementById("game-join-form")
+                .classList.add("hidden");
+            document
+                .getElementById("game-chat-form")
+                .classList.remove("hidden");
+            document
+                .getElementById("game-chat-form")
+                .classList.add("visible");
+        }
+
+        function sendChat(event) {
+            event.preventDefault();
+            webSocket.send(
+                JSON.stringify({
+                    event: "sendChat",
+                    data: { senderPlayer: player, sendChat: document.getElementById('chat-message').value },
+                })
+            );
+            console.log(player);
+
+            document
+                .getElementById("game-join-form")
+                .classList.add("hidden");
+        }
+
+        //Actions
+
+        document
+            .getElementById("sendChat")
+            .addEventListener("click", sendChat);
+
+        document
+            .getElementById("createRoom")
+            .addEventListener("click", createRoom);
+
+        document
+            .getElementById("joinRoom")
+            .addEventListener("click", joinRoom);
+    </script>
+</body>
+
+</html>
