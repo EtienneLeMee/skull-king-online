@@ -17,22 +17,8 @@ wss.on("connection", function connection(ws) {
 
     ws.on("close", () => {
         console.log("[SERVER] Close - Client has disconnected!");
-        /*for (const room in rooms) {
-            if (rooms[room][uuid]) {
-                delete rooms[room][uuid]; // Supprime l'utilisateur de la room
-                console.log(`Client ${uuid} removed from room ${room}`);
-
-                // Supprime la room si elle devient vide
-                if (Object.keys(rooms[room]).length === 0) {
-                    delete rooms[room];
-                    console.log(`Room ${room} deleted (empty)`);
-                }
-                break; // Sort de la boucle dès qu'on a trouvé la room de l'utilisateur
-            }
-        }*/
+        leaveRoom()
     });
-
-    //ws.send("something first")
 
     ws.on("message", (messageData) => {
         var sendData = null;
@@ -63,11 +49,10 @@ wss.on("connection", function connection(ws) {
                 p.ws.send(sendData);
             });
 
+        } else if (event === "leaveRoom") {
+            let player = data.player;
+            let room = rooms.find(r => r.id === player.roomId);
 
-            if (!player.roomId){
-                room = createRoom(player);
-                console.log(`[SERVER] Event - createRoom - ${room.id} - ${player.username}`)
-            }
 
         } else if (event === "sendChat"){
             let senderPlayer = data.senderPlayer
@@ -78,31 +63,10 @@ wss.on("connection", function connection(ws) {
                 p.ws.send(sendData);
             });
             console.log(`[SERVER] Event - sendChat - ${room.id} - ${data.sendChat}`);
-            //ws.send(sendData); 
 
-        } else if (meta === "leave") {
-            if (Object.keys(rooms[room]).length === 1) {
-                delete rooms[room]; // ...delete the room when leaving
-
-            } else {
-                delete rooms[room][uuid]; // ...delete the person id who's leaving
-            }
-        } else if (meta === "chat") {
-            if (rooms[room]) {
-                console.log(`Broadcasting message in room ${room}: ${message}`);
-                // On envoie le message à tous les membres de la room
-                Object.values(rooms[room]).forEach((client) => {
-                    if (client.readyState === WebSocket.OPEN) {
-                        client.send(
-                            JSON.stringify({ message, room, sender: uuid })
-                        );
-                    }
-                });
-            }
         }
     });
 
-    //ws.send("something");
 });
 
 function createRoom(player) {
@@ -120,6 +84,14 @@ function joinRoom(player, room) {
 
     room.players.push(player)
     player.roomId = room.id;
+
+    return room;
+}
+
+function leaveRoom(player, room) {
+    //TODO vérifier si la room n'est pas vide
+
+    room.players.pop(player)
 
     return room;
 }
