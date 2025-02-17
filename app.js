@@ -26,7 +26,7 @@ wss.on("connection", function connection(ws) {
         const {event, data} = parsedData;
         console.log("[SERVER] Message - Data received : %s %s", event, data);
 
-        //Create Room
+        //Create Room App
         if (event === "createRoom") {
             let player = data.player;
             player.ws = ws;
