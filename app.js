@@ -54,11 +54,11 @@ wss.on("connection", function connection(ws) {
 
         //Leave Room App
         } else if (event === "leaveRoom") {
-            let player = data.player;
-            let room = rooms.find(r => r.id === player.roomId);
-            leaveRoom(player)
+            let senderPlayer = data.player;
+            let room = rooms.find(r => r.id === senderPlayer.roomId);
+            leaveRoom(senderPlayer);
             room.players.forEach(p => {
-                sendData = JSON.stringify({event: event, data: {player: p, senderPlayer: senderPlayer, sendChat: data.sendChat}});
+                sendData = JSON.stringify({event: event, data: {player: p, senderPlayer: senderPlayer}});
                 p.ws.send(sendData);
             });
 
@@ -93,15 +93,18 @@ function joinRoom(player, room) {
 
     room.players.push(player)
     player.roomId = room.id;
+    players.push(player);
 
     return room;
 }
 
 function leaveRoom(player) {
     //TODO vérifier si la room n'est pas vide
-    let room
+    let room;
     if(player){
-        room = player.roomId;
+        let room = rooms.find(r => r.id === player.roomId);
+        console.log(room);
+        console.log(room.players)
         room.players.pop(player);
         players.pop(player);
     }
