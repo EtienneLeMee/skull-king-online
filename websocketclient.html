@@ -60,26 +60,18 @@
             if (event === "createRoom") {
                 console.log("[CLIENT] " + event + " - " + player.roomId);
                 document.getElementById("party").innerHTML += "Le code de partie est : " + player.roomId + "<br>";
-                document.getElementById("players-list").innerHTML += player.username + "<br>";
+                playerListConstructor(data)
             } else if (event === "joinRoom") {
                 console.log("[CLIENT] " + event + " - " + data.roomId);
                 document.getElementById("party").innerHTML = "Le code de partie est : " + player.roomId + "<br>";
-                document.getElementById("players-list").innerHTML = "";
-                data.room.players.forEach(p => {
-                    document.getElementById("players-list").innerHTML += p.username ;
-                    if(p.host){
-                        document.getElementById("players-list").innerHTML += `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-                        </svg> `
-                    }
-                    document.getElementById("players-list").innerHTML += "<br>" ;
-                });
+                playerListConstructor(data);
             } else if (event === "sendChat") {
                 console.log(event);
                 document.getElementById("messages").innerHTML +=
-                    data.senderPlayer.username + " : " + data.sendChat + "<br>";
+                    senderPlayer.username + " : " + data.sendChat + "<br>";
+            } else if (event === "leaveRoom") {
+                console.log("[CLIENT] " + event + " - " + senderPlayer.username);
+                playerListConstructor(data);
             }
         };
 
@@ -142,15 +134,38 @@
             console.log(player);
         }
 
-        function sendChat(event) {
+        function leaveRoom(event) {
             event.preventDefault();
             webSocket.send(
                 JSON.stringify({
                     event: "leaveRoom",
-                    data: { player: player },
+                    data: { player: player, senderPlayer: player },
                 })
             );
-            console.log(player);
+            document.getElementById("party").innerHTML = ""
+            document.getElementById("join-game-div").style.display = "block";
+            document.getElementById("in-game-div").style.display = "none";
+        }
+
+        function playerListConstructor(data){
+            document.getElementById("players-list").innerHTML = "";
+            data.room.players.forEach(p => {
+                console.log(p.socketId+" - "+data.player.socketId);
+                console.log(p.socketId == data.player.socketId);
+                if(p.socketId == data.player.socketId){
+                    document.getElementById("players-list").innerHTML += `<b>${p.username}</b>` ;
+                } else {
+                    document.getElementById("players-list").innerHTML += p.username;
+                }
+                if(p.host){
+                    document.getElementById("players-list").innerHTML += `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                    </svg> `
+                }
+                document.getElementById("players-list").innerHTML += "<br>" ;
+            })
         }
 
         //Actions

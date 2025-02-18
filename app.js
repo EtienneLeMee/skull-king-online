@@ -8,6 +8,7 @@ const server = createServer();
 const wss = new WebSocketServer({ port: port });
 
 const rooms = [];
+const players = [];
 
 wss.on("connection", function connection(ws) {
     let client = randomUUID();
@@ -17,10 +18,17 @@ wss.on("connection", function connection(ws) {
 
     ws.on("close", () => {
         console.log("[SERVER] Close - Client has disconnected!");
-        leaveRoom()
+        let senderPlayer = players.find(p => p.ws === ws);
+        let room = rooms.find(r => r.id === senderPlayer.roomId);
+        leaveRoom(senderPlayer);
+        room.players.forEach(p => {
+            let sendData = JSON.stringify({event: "leaveRoom", data: {player: p, senderPlayer: senderPlayer, room: room}});
+            p.ws.send(sendData);
+        });
     });
 
     ws.on("message", (messageData) => {
+
         var sendData = null;
         const parsedData = JSON.parse(messageData);
         const {event, data} = parsedData;
@@ -29,14 +37,16 @@ wss.on("connection", function connection(ws) {
         //Create Room App
         if (event === "createRoom") {
             let player = data.player;
+            player.socketId = client;
             player.ws = ws;
 
             let room = createRoom(player);
             console.log(`[SERVER] Event - createRoom - ${room.id} - ${player.username}`)
-            sendData = JSON.stringify({event: event, data: {player: player}})
+            sendData = JSON.stringify({event: event, data: {player: player, room: room}})
             ws.send(sendData);  
         } else if (event === "joinRoom") {
             let player = data.player;
+            player.socketId = client;
             player.ws = ws;
 
             let room = rooms.find(r => r.id === player.roomId);
@@ -50,15 +60,19 @@ wss.on("connection", function connection(ws) {
                 p.ws.send(sendData);
             });
 
+        //Leave Room App
         } else if (event === "leaveRoom") {
-            let player = data.player;
-            let room = rooms.find(r => r.id === player.roomId);
-
+            let senderPlayer = data.senderPlayer;
+            let room = rooms.find(r => r.id === senderPlayer.roomId);
+            room = leaveRoom(senderPlayer);
+            room.players.forEach(p => {
+                sendData = JSON.stringify({event: event, data: {player: p, senderPlayer: senderPlayer, room: room}});
+                p.ws.send(sendData);
+            });
 
         } else if (event === "sendChat"){
             let senderPlayer = data.senderPlayer
             let room = rooms.find(r => r.id === senderPlayer.roomId);
-            console.log(senderPlayer)
             room.players.forEach(p => {
                 sendData = JSON.stringify({event: event, data: {player: p, senderPlayer: senderPlayer, sendChat: data.sendChat}});
                 p.ws.send(sendData);
@@ -66,6 +80,7 @@ wss.on("connection", function connection(ws) {
             console.log(`[SERVER] Event - sendChat - ${room.id} - ${data.sendChat}`);
 
         }
+        outputRooms();
     });
 
 });
@@ -76,6 +91,7 @@ function createRoom(player) {
     player.roomId = room.id;
     room.players.push(player);
     rooms.push(room);
+    players.push(player);
 
     return room;
 }
@@ -85,18 +101,46 @@ function joinRoom(player, room) {
 
     room.players.push(player)
     player.roomId = room.id;
+    players.push(player);
 
     return room;
 }
 
-function leaveRoom(player, room) {
-    //TODO vérifier si la room n'est pas vide
+function leaveRoom(player) {
+    let room = null;
+    let playerToDeleteIndex = null;
+    if(player){
+        console.log(`player: ${player.username} - ${player.socketId}`)
+        room = rooms.find(r => r.id === player.roomId);
+        playerToDeleteIndex = room.players.findIndex(p => p.socketId == player.socketId);
+        console.log(`playerToDelete: ${room.players[playerToDeleteIndex].username} - ${player.socketId}`)
+        room.players.splice(playerToDeleteIndex, 1);
+        playerToDeleteIndex = players.findIndex(p => p.socketId == player.socketId);
+        players.splice(playerToDeleteIndex, 1); 
 
-    room.players.pop(player)
+        //Si la room est vide
+        if(room.players.length==0){
+            deleteRoom(room)
+        } else {
+            if(player.host){
+                room.players[0].host = true;
+            }
+        }
+    }
 
     return room;
+}
+
+function deleteRoom(room){
+    console.log(`[SERVER] Event - deleteRoom - ${room.id}`)
+    rooms.pop(room);
 }
 
 function roomId() {
     return Math.random().toString(36).substring(2,9);
+}
+
+function outputRooms() {
+    console.log("Rooms");
+    rooms.forEach(r => console.log(r))
 }
