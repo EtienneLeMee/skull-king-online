@@ -43,22 +43,26 @@ wss.on("connection", function connection(ws) {
             let room = createRoom(player);
             console.log(`[SERVER] Event - createRoom - ${room.id} - ${player.username}`)
             sendData = JSON.stringify({event: event, data: {player: player, room: room}})
-            ws.send(sendData);  
+            ws.send(sendData);
+
+        //Join Room App
         } else if (event === "joinRoom") {
             let player = data.player;
             player.socketId = client;
             player.ws = ws;
-
             let room = rooms.find(r => r.id === player.roomId);
             room = joinRoom(player, room);
-            console.log(`[SERVER] Event - joinRoom - ${room.id} - ${player.username}`);
-            //sendData = JSON.stringify({event: event, data: {player: player}});
-            //ws.send(sendData);
-
-            room.players.forEach(p => {
-                sendData = JSON.stringify({event: event, data: {player: p, room: room}});
-                p.ws.send(sendData);
-            });
+            //console.log(room)
+            if(room){
+                room.players.forEach(p => {
+                    sendData = JSON.stringify({event: event, data: {player: p, room: room}});
+                    p.ws.send(sendData);
+                });
+            } else {
+                sendData = JSON.stringify({event: event, data: {player: player, room: room, error: "Le salon est plein."}});
+                ws.send(sendData)
+            }
+            
 
         //Leave Room App
         } else if (event === "leaveRoom") {
@@ -80,7 +84,6 @@ wss.on("connection", function connection(ws) {
             console.log(`[SERVER] Event - sendChat - ${room.id} - ${data.sendChat}`);
 
         }
-        outputRooms();
     });
 
 });
@@ -97,12 +100,16 @@ function createRoom(player) {
 }
 
 function joinRoom(player, room) {
-    //TODO vérifier si la room n'est pas complète (8 joueurs)
-
-    room.players.push(player)
-    player.roomId = room.id;
-    players.push(player);
-
+    if(room.players.length <8 ){
+        console.log(`[SERVER] Event - joinRoom - ${room.id} - ${player.username}`);
+        room.players.push(player)
+        player.roomId = room.id;
+        players.push(player);
+    } else {
+        console.error(`[SERVER] Event - joinRoom - ${room.id} - ${player.username} - Partie complète`);
+        room = null;
+    }
+    
     return room;
 }
 
@@ -110,10 +117,8 @@ function leaveRoom(player) {
     let room = null;
     let playerToDeleteIndex = null;
     if(player){
-        console.log(`player: ${player.username} - ${player.socketId}`)
         room = rooms.find(r => r.id === player.roomId);
         playerToDeleteIndex = room.players.findIndex(p => p.socketId == player.socketId);
-        console.log(`playerToDelete: ${room.players[playerToDeleteIndex].username} - ${player.socketId}`)
         room.players.splice(playerToDeleteIndex, 1);
         playerToDeleteIndex = players.findIndex(p => p.socketId == player.socketId);
         players.splice(playerToDeleteIndex, 1); 

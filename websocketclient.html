@@ -62,9 +62,13 @@
                 document.getElementById("party").innerHTML += "Le code de partie est : " + player.roomId + "<br>";
                 playerListConstructor(data)
             } else if (event === "joinRoom") {
-                console.log("[CLIENT] " + event + " - " + data.roomId);
-                document.getElementById("party").innerHTML = "Le code de partie est : " + player.roomId + "<br>";
-                playerListConstructor(data);
+                if(data.room){
+                    console.log("[CLIENT] " + event + " - " + data.roomId);
+                    document.getElementById("party").innerHTML = "Le code de partie est : " + player.roomId + "<br>";
+                    playerListConstructor(data);
+                } else {
+                    alert(data.error);
+                }
             } else if (event === "sendChat") {
                 console.log(event);
                 document.getElementById("messages").innerHTML +=
@@ -97,8 +101,7 @@
                 })
             );
 
-            document.getElementById("join-game-div").style.display = "none";
-            document.getElementById("in-game-div").style.display = "block";
+            
         }
 
         function joinRoom(event) {
@@ -148,6 +151,8 @@
         }
 
         function playerListConstructor(data){
+            document.getElementById("join-game-div").style.display = "none";
+            document.getElementById("in-game-div").style.display = "block";
             document.getElementById("players-list").innerHTML = "";
             data.room.players.forEach(p => {
                 console.log(p.socketId+" - "+data.player.socketId);
