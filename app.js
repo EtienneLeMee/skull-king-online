@@ -8,6 +8,7 @@ const server = createServer();
 const wss = new WebSocketServer({ port: port });
 
 const rooms = [];
+const players = [];
 
 wss.on("connection", function connection(ws) {
     let client = randomUUID();
@@ -17,7 +18,8 @@ wss.on("connection", function connection(ws) {
 
     ws.on("close", () => {
         console.log("[SERVER] Close - Client has disconnected!");
-        leaveRoom()
+        let player = players.find(p => p.ws === ws);
+        leaveRoom(player)
     });
 
     ws.on("message", (messageData) => {
@@ -50,10 +52,15 @@ wss.on("connection", function connection(ws) {
                 p.ws.send(sendData);
             });
 
+        //Leave Room App
         } else if (event === "leaveRoom") {
             let player = data.player;
             let room = rooms.find(r => r.id === player.roomId);
-
+            leaveRoom(player)
+            room.players.forEach(p => {
+                sendData = JSON.stringify({event: event, data: {player: p, senderPlayer: senderPlayer, sendChat: data.sendChat}});
+                p.ws.send(sendData);
+            });
 
         } else if (event === "sendChat"){
             let senderPlayer = data.senderPlayer
@@ -76,6 +83,7 @@ function createRoom(player) {
     player.roomId = room.id;
     room.players.push(player);
     rooms.push(room);
+    players.push(player);
 
     return room;
 }
@@ -89,10 +97,14 @@ function joinRoom(player, room) {
     return room;
 }
 
-function leaveRoom(player, room) {
+function leaveRoom(player) {
     //TODO vérifier si la room n'est pas vide
-
-    room.players.pop(player)
+    let room
+    if(player){
+        room = player.roomId;
+        room.players.pop(player);
+        players.pop(player);
+    }
 
     return room;
 }
