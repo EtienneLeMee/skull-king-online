@@ -18,8 +18,13 @@ wss.on("connection", function connection(ws) {
 
     ws.on("close", () => {
         console.log("[SERVER] Close - Client has disconnected!");
-        let player = players.find(p => p.ws === ws);
-        leaveRoom(player)
+        let senderPlayer = players.find(p => p.ws === ws);
+        let room = rooms.find(r => r.id === senderPlayer.roomId);
+        leaveRoom(senderPlayer);
+        room.players.forEach(p => {
+            let sendData = JSON.stringify({event: "leaveRoom", data: {player: p, senderPlayer: senderPlayer, room: room}});
+            p.ws.send(sendData);
+        });
     });
 
     ws.on("message", (messageData) => {
