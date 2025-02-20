@@ -19,12 +19,16 @@ wss.on("connection", function connection(ws) {
     ws.on("close", () => {
         console.log("[SERVER] Close - Client has disconnected!");
         let senderPlayer = players.find(p => p.ws === ws);
-        let room = rooms.find(r => r.id === senderPlayer.roomId);
-        leaveRoom(senderPlayer);
-        room.players.forEach(p => {
-            let sendData = JSON.stringify({event: "leaveRoom", data: {player: p, senderPlayer: senderPlayer, room: room}});
-            p.ws.send(sendData);
-        });
+        if(senderPlayer){
+            let room = rooms.find(r => r.id === senderPlayer.roomId);
+            leaveRoom(senderPlayer);
+            if(room){
+                room.players.forEach(p => {
+                    let sendData = JSON.stringify({event: "leaveRoom", data: {player: p, senderPlayer: senderPlayer, room: room}});
+                    p.ws.send(sendData);
+                });
+            }
+        }   
     });
 
     ws.on("message", (messageData) => {
@@ -74,6 +78,7 @@ wss.on("connection", function connection(ws) {
                 p.ws.send(sendData);
             });
 
+        //Send Chat App
         } else if (event === "sendChat"){
             let senderPlayer = data.senderPlayer
             let room = rooms.find(r => r.id === senderPlayer.roomId);
@@ -83,6 +88,15 @@ wss.on("connection", function connection(ws) {
             });
             console.log(`[SERVER] Event - sendChat - ${room.id} - ${data.sendChat}`);
 
+        //Start Game App
+        } else if (event === "startGame"){
+            let player = data.player;
+            let room = rooms.find(r => r.id === player.roomId);
+            room = startGame(room);
+            room.players.forEach(p => {
+                sendData = JSON.stringify({event: event, data: {player: p, room: room}});
+                p.ws.send(sendData);
+            });
         }
     });
 
@@ -143,6 +157,17 @@ function deleteRoom(room){
 
 function roomId() {
     return Math.random().toString(36).substring(2,9);
+}
+
+function startGame(room) {
+    console.log(`[SERVER] Event - startGame - ${room.id}`);
+    room = initScore(room)
+    return room;
+}
+
+function initScore(room){
+    room.players.forEach(p => p.score = 0);
+    return room
 }
 
 function outputRooms() {

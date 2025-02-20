@@ -41,6 +41,9 @@
             </button>        
         </form>
         <div id="messages"></div>
+        <div id="game-board">
+            <button id="startGame" disabled>Lancer la partie</button>
+        </div>
     </div>
 
     
@@ -66,6 +69,9 @@
                     console.log("[CLIENT] " + event + " - " + data.roomId);
                     document.getElementById("party").innerHTML = "Le code de partie est : " + player.roomId + "<br>";
                     playerListConstructor(data);
+                    if(data.room.players.length >=2){
+                        document.getElementById("startGame").removeAttribute("disabled");
+                    }
                 } else {
                     alert(data.error);
                 }
@@ -76,6 +82,11 @@
             } else if (event === "leaveRoom") {
                 console.log("[CLIENT] " + event + " - " + senderPlayer.username);
                 playerListConstructor(data);
+
+            //Start Game Client
+            } else if (event === "startGame") {
+                console.log("[CLIENT] " + event);
+                playerListConstructor(data)
             }
         };
 
@@ -101,7 +112,7 @@
                 })
             );
 
-            
+            document.getElementById("startGame").style.display = "block";            
         }
 
         function joinRoom(event) {
@@ -124,6 +135,8 @@
 
             document.getElementById("join-game-div").style.display = "none";
             document.getElementById("in-game-div").style.display = "block";
+            document.getElementById("startGame").style.display = "none";
+
         }
 
         function sendChat(event) {
@@ -150,6 +163,17 @@
             document.getElementById("in-game-div").style.display = "none";
         }
 
+        function startGame(event) {
+            event.preventDefault();
+            webSocket.send(
+                JSON.stringify({
+                    event: "startGame",
+                    data: { player: player },
+                })
+            );
+            console.log(player);
+        }
+
         function playerListConstructor(data){
             document.getElementById("join-game-div").style.display = "none";
             document.getElementById("in-game-div").style.display = "block";
@@ -157,10 +181,15 @@
             data.room.players.forEach(p => {
                 console.log(p.socketId+" - "+data.player.socketId);
                 console.log(p.socketId == data.player.socketId);
+                let score = ""
+                console.log(`score: ${p.score}`)
+                if(p.score != null) {
+                    score=p.score
+                }
                 if(p.socketId == data.player.socketId){
-                    document.getElementById("players-list").innerHTML += `<b>${p.username}</b>` ;
+                    document.getElementById("players-list").innerHTML += `<b>${p.username}</b> ${score}` ;
                 } else {
-                    document.getElementById("players-list").innerHTML += p.username;
+                    document.getElementById("players-list").innerHTML += `${p.username} ${score}`;
                 }
                 if(p.host){
                     document.getElementById("players-list").innerHTML += `
@@ -190,6 +219,10 @@
         document
             .getElementById("leaveRoom")
             .addEventListener("click", leaveRoom);
+
+        document
+            .getElementById("startGame")
+            .addEventListener("click", startGame);
     </script>
 </body>
 
