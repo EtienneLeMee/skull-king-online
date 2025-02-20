@@ -162,13 +162,32 @@ function roomId() {
 function startGame(room) {
     console.log(`[SERVER] Event - startGame - ${room.id}`);
     room = initScore(room)
+    startRound(room);
     return room;
 }
 
 function initScore(room){
     room.players.forEach(p => p.score = 0);
+    room.round = 1;
     return room
 }
+
+function startRound(room){
+    if(room.round=10){
+        //finishGame here
+    } else {
+        //Shuffle here
+    
+        //Distrib here
+
+        //MakePrediction here with user action
+
+        //
+
+        room.round += 1;
+    }
+    return room;
+} 
 
 function outputRooms() {
     console.log("Rooms");
