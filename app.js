@@ -122,13 +122,15 @@ wss.on("connection", function connection(ws) {
                 const sendData = JSON.stringify({ event: event, data: { player: p, senderPlayer: senderPlayer, room: room } });
                 p.ws.send(sendData);
             });
+            console.log(`[SERVER] Event - ${event} - ${room.id} - ${senderPlayer.username}`);
             if (room.players.every(p => p.emitBet === true)) {
                 //startPlayingHand(); 
             
                 room.players.forEach(p => {
-                    const sendData = JSON.stringify({ event: "startPlayingHand", data: { player: p, room: room, cards: p.deck } });
+                    const sendData = JSON.stringify({ event: "startPlayingHand", data: { player: p, senderPlayer: senderPlayer, room: room } });
                     p.ws.send(sendData);
                 });
+                console.log(`[SERVER] Event - startPlayingHand - ${room.id} - ${room.players[0].username}`);
             }
             
         }
