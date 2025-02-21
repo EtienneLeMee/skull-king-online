@@ -104,6 +104,33 @@ wss.on("connection", function connection(ws) {
                 sendData = JSON.stringify({event: event, data: {player: p, room: roomCopy, cards: playerCards}});
                 p.ws.send(sendData);
             });
+
+            room.players.forEach(p => {
+                delete p.deck;
+            });
+
+        //Start Game App
+        } else if (event === "emitBet"){
+            let senderPlayer = data.player;
+            //senderPlayer.emitBet = true;
+            let room = rooms.find(r => r.id === senderPlayer.roomId);
+            room.players.find(p => p.socketId === senderPlayer.socketId).emitBet = true;
+            room.players.forEach(p => {
+                //console.log(`${p.username} ${p.emitBet}`)
+                //if(p.socketId===senderPlayer.socketId){p.emitBet = true}else{p.emitBet = false}
+                //console.log(`${p.username} ${p.emitBet}`)
+                const sendData = JSON.stringify({ event: event, data: { player: p, senderPlayer: senderPlayer, room: room } });
+                p.ws.send(sendData);
+            });
+            if (room.players.every(p => p.emitBet === true)) {
+                //startPlayingHand(); 
+            
+                room.players.forEach(p => {
+                    const sendData = JSON.stringify({ event: "startPlayingHand", data: { player: p, room: room, cards: p.deck } });
+                    p.ws.send(sendData);
+                });
+            }
+            
         }
     });
 
