@@ -44,6 +44,9 @@
         <div id="game-board">
             <button id="startGame" disabled>Lancer la partie</button>
         </div>
+        <div id="game">
+
+        </div>
     </div>
 
     
@@ -87,6 +90,11 @@
             } else if (event === "startGame") {
                 console.log("[CLIENT] " + event);
                 playerListConstructor(data)
+                document.getElementById("game").innerHTML = ""
+                data.cards.forEach(card => {
+                    document.getElementById("game").innerHTML += card.suit +", "+card.value+"<br>";
+                })
+                document.getElementById("game").innerHTML +=`<input type="number" id="number" value="0" min="0" max="${data.room.round}">`
             }
         };
 
