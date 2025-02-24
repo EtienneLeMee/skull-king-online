@@ -1,271 +1,329 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" href="style.css" />
+    </head>
 
-<head>
-    <link rel="stylesheet" href="style.css" />
-</head>
+    <body>
+        <div id="join-game-div" style="display: block">
+            <form id="create-form">
+                <label for="name">Nom :</label>
+                <input type="text" id="name-create" name="name" /><br /><br />
+                <button type="submit" id="createRoom">Créer une partie</button
+                ><br /><br />
+            </form>
 
-<body>
-    <div id="join-game-div" style="display:block;">
-        <form id="create-form">
-            <label for="name">Nom :</label>
-            <input type="text" id="name-create" name="name" /><br /><br />
-            <button type="submit" id="createRoom">Créer une partie</button><br /><br />
-        </form>
-
-        <form id="join-form">
-            <label for="name">Nom :</label>
-            <input type="text" id="name-join" name="name" /><br /><br />
-            <label for="room">Code partie :</label>
-            <input type="text" id="room-join" name="room" /><br /><br />
-            <button type="submit" id="joinRoom">
-                Rejoindre une partie
-            </button>
-        </form>
-    </div>
-    <div id="in-game-div" style="display:none;">
-        <div id="party"></div>
-        <div id="leaveRoom">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
-                <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
-            </svg>
+            <form id="join-form">
+                <label for="name">Nom :</label>
+                <input type="text" id="name-join" name="name" /><br /><br />
+                <label for="room">Code partie :</label>
+                <input type="text" id="room-join" name="room" /><br /><br />
+                <button type="submit" id="joinRoom">
+                    Rejoindre une partie
+                </button>
+            </form>
         </div>
-        <br>
-        <div id="players-list"></div><br><br>
-        <form id="chat-form">
-            <label for="chat-message">Enter Message:</label>
-            <input type="text" id="chat-message" name="chat-message" /><br /><br />
-            <button type="submit" id="sendChat">
-                Envoyer
-            </button>        
-        </form>
-        <div id="messages"></div>
-        <div id="game-board">
-            <button id="startGame" disabled>Lancer la partie</button>
-        </div>
-        <div id="game" style="display:none;">
-            <div id="cards">
-
+        <div id="in-game-div" style="display: none">
+            <div id="party"></div>
+            <div id="leaveRoom">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-box-arrow-left"
+                    viewBox="0 0 16 16"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"
+                    />
+                    <path
+                        fill-rule="evenodd"
+                        d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"
+                    />
+                </svg>
             </div>
-            <div id="form-player-bet" style="display:block;">
-                <input type="number" id="player-bet" value="0" min="0"><button id="emitBet">Parier</button>
+            <br />
+            <div id="players-list"></div>
+            <br /><br />
+            <form id="chat-form">
+                <label for="chat-message">Enter Message:</label>
+                <input
+                    type="text"
+                    id="chat-message"
+                    name="chat-message"
+                /><br /><br />
+                <button type="submit" id="sendChat">Envoyer</button>
+            </form>
+            <div id="messages"></div>
+            <div id="game-board">
+                <button id="startGame" disabled>Lancer la partie</button>
             </div>
-            
+            <div id="game" style="display: none">
+                <div class="cards" id="cards"></div>
+                <div id="form-player-bet" style="display: block">
+                    <input
+                        type="number"
+                        id="player-bet"
+                        value="0"
+                        min="0"
+                    /><button id="emitBet">Parier</button>
+                </div>
+            </div>
         </div>
-    </div>
 
-    
+        <script>
+            const webSocket = new WebSocket("ws://localhost:8080/");
+            let player = null;
+            webSocket.onmessage = (sentData) => {
+                console.log(sentData);
+                const parsedData = JSON.parse(sentData.data);
+                const { event, data } = parsedData;
 
-    <script>
-        const webSocket = new WebSocket("ws://localhost:8080/");
-        let player = null;
-        webSocket.onmessage = (sentData) => {
-            console.log(sentData);
-            const parsedData = JSON.parse(sentData.data);
-            const { event, data } = parsedData;
+                player = data.player;
+                senderPlayer = data.senderPlayer;
 
-            player = data.player;
-            senderPlayer = data.senderPlayer;
-
-            //Create Room Client
-            if (event === "createRoom") {
-                console.log("[CLIENT] " + event + " - " + player.roomId);
-                document.getElementById("party").innerHTML += "Le code de partie est : " + player.roomId + "<br>";
-                playerListConstructor(data)
-            } else if (event === "joinRoom") {
-                if(data.room){
-                    console.log("[CLIENT] " + event + " - " + data.roomId);
-                    document.getElementById("party").innerHTML = "Le code de partie est : " + player.roomId + "<br>";
+                //Create Room Client
+                if (event === "createRoom") {
+                    console.log("[CLIENT] " + event + " - " + player.roomId);
+                    document.getElementById("party").innerHTML +=
+                        "Le code de partie est : " + player.roomId + "<br>";
                     playerListConstructor(data);
-                    if(data.room.players.length >=2){
-                        document.getElementById("startGame").removeAttribute("disabled");
+                } else if (event === "joinRoom") {
+                    if (data.room) {
+                        console.log("[CLIENT] " + event + " - " + data.roomId);
+                        document.getElementById("party").innerHTML =
+                            "Le code de partie est : " + player.roomId + "<br>";
+                        playerListConstructor(data);
+                        if (data.room.players.length >= 2) {
+                            document
+                                .getElementById("startGame")
+                                .removeAttribute("disabled");
+                        }
+                    } else {
+                        alert(data.error);
                     }
-                } else {
-                    alert(data.error);
+                } else if (event === "sendChat") {
+                    console.log(event);
+                    document.getElementById("messages").innerHTML +=
+                        senderPlayer.username + " : " + data.sendChat + "<br>";
+                } else if (event === "leaveRoom") {
+                    console.log(
+                        "[CLIENT] " + event + " - " + senderPlayer.username
+                    );
+                    playerListConstructor(data);
+
+                    //Start Game Client
+                } else if (event === "startGame") {
+                    console.log("[CLIENT] " + event);
+                    playerListConstructor(data);
+                    document.getElementById("cards").innerHTML = "";
+
+                    createFanEffect(data.cards)
+                    document.getElementById("game").style.display = "block";
+
+                    //Start Game Client
+                } else if (event === "emitBet") {
+                    console.log(
+                        "[CLIENT] " + event + " - " + senderPlayer.username
+                    );
+                    playerListConstructor(data);
+
+                    //Start Playing Hand
+                } else if (event === "startPlayingHand") {
+                    console.log(
+                        "[CLIENT] " + event + " - " + senderPlayer.username
+                    );
+                    playerListConstructor(data);
                 }
-            } else if (event === "sendChat") {
-                console.log(event);
-                document.getElementById("messages").innerHTML +=
-                    senderPlayer.username + " : " + data.sendChat + "<br>";
-            } else if (event === "leaveRoom") {
-                console.log("[CLIENT] " + event + " - " + senderPlayer.username);
-                playerListConstructor(data);
+            };
 
-            //Start Game Client
-            } else if (event === "startGame") {
-                console.log("[CLIENT] " + event);
-                playerListConstructor(data)
-                document.getElementById("cards").innerHTML = ""
-                data.cards.forEach(card => {
-                    document.getElementById("cards").innerHTML += card.suit +", "+card.value+"<br>";
-                })
-                document.getElementById("game").style.display = "block";
-            
-            //Start Game Client
-            } else if (event === "emitBet") {
-                console.log("[CLIENT] " + event + " - " + senderPlayer.username);
-                playerListConstructor(data);
+            webSocket.addEventListener("open", () => {
+                console.log("We are connected");
+            });
 
-            //Start Game Client
+            function createRoom(event) {
+                event.preventDefault();
+                player = {
+                    host: true,
+                    roomId: null,
+                    username: document.getElementById("name-create").value,
+                    socketId: "",
+                    turn: false,
+                    win: false,
+                    ws: null,
+                };
+                webSocket.send(
+                    JSON.stringify({
+                        event: "createRoom",
+                        data: { player: player },
+                    })
+                );
+
+                document.getElementById("startGame").style.display = "block";
             }
-        };
 
-        webSocket.addEventListener("open", () => {
-            console.log("We are connected");
-        });
+            function joinRoom(event) {
+                event.preventDefault();
+                player = {
+                    host: false,
+                    roomId: document.getElementById("room-join").value,
+                    username: document.getElementById("name-join").value,
+                    socketId: "",
+                    turn: false,
+                    win: false,
+                    ws: null,
+                };
+                webSocket.send(
+                    JSON.stringify({
+                        event: "joinRoom",
+                        data: { player: player },
+                    })
+                );
 
-        function createRoom(event) {
-            event.preventDefault();
-            player = {
-                host: true,
-                roomId: null,
-                username: document.getElementById("name-create").value,
-                socketId: "",
-                turn: false,
-                win: false,
-                ws: null,
-            };
-            webSocket.send(
-                JSON.stringify({
-                    event: "createRoom",
-                    data: { player: player },
-                })
-            );
+                document.getElementById("join-game-div").style.display = "none";
+                document.getElementById("in-game-div").style.display = "block";
+                document.getElementById("startGame").style.display = "none";
+            }
 
-            document.getElementById("startGame").style.display = "block";            
+            function sendChat(event) {
+                event.preventDefault();
+                webSocket.send(
+                    JSON.stringify({
+                        event: "sendChat",
+                        data: {
+                            senderPlayer: player,
+                            sendChat:
+                                document.getElementById("chat-message").value,
+                        },
+                    })
+                );
+                console.log(player);
+            }
+
+            function leaveRoom(event) {
+                event.preventDefault();
+                webSocket.send(
+                    JSON.stringify({
+                        event: "leaveRoom",
+                        data: { player: player, senderPlayer: player },
+                    })
+                );
+                document.getElementById("party").innerHTML = "";
+                document.getElementById("join-game-div").style.display =
+                    "block";
+                document.getElementById("in-game-div").style.display = "none";
+            }
+
+            function startGame(event) {
+                event.preventDefault();
+                webSocket.send(
+                    JSON.stringify({
+                        event: "startGame",
+                        data: { player: player },
+                    })
+                );
+                document.getElementById("startGame").style.display = "none";
+            }
+
+            function emitBet(event) {
+                event.preventDefault();
+                webSocket.send(
+                    JSON.stringify({
+                        event: "emitBet",
+                        data: {
+                            player: player,
+                            bet: document.getElementById("player-bet").value,
+                        },
+                    })
+                );
+                document.getElementById("form-player-bet").style.display =
+                    "none";
+            }
+
+            function playerListConstructor(data) {
+                document.getElementById("join-game-div").style.display = "none";
+                document.getElementById("in-game-div").style.display = "block";
+                document.getElementById("players-list").innerHTML = "";
+                data.room.players.forEach((p) => {
+                    let score = "";
+                    if (p.score != null) {
+                        score = p.score;
+                    }
+                    if (p.socketId == data.player.socketId) {
+                        document.getElementById(
+                            "players-list"
+                        ).innerHTML += `<b>${p.username}</b> ${score}`;
+                    } else {
+                        document.getElementById(
+                            "players-list"
+                        ).innerHTML += `${p.username} ${score}`;
+                    }
+                    if (p.host) {
+                        document.getElementById("players-list").innerHTML += `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg> `;
+                    }
+                    console.log("emitBet : " + p.emitBet);
+                    if (p.emitBet) {
+                        document.getElementById("players-list").innerHTML += `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>`;
+                    }
+                    if (p.turn) {
+                        document.getElementById("players-list").innerHTML += `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
+                            <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
+                        </svg>
+                        `;
+                    }
+                    document.getElementById("players-list").innerHTML += "<br>";
+                });
+            }
+
+            function createFanEffect(cards) {
+                for (let i = (cards.length + 1) / 2 - cards.length;i < cards.length / 2;i++
+                ) {
+                    const card = document.createElement("div");
+                    card.textContent = cards[i].value+" - "+cards[i].suit; // Lettres A, B, C...
+
+                    card.style.transform += `rotate(${i * 10}deg)`; //translateY(${Math.abs(i+10)}px)`;
+                    card.classList.add("card");
+
+                    document.getElementById("cards").appendChild(card);
+            }
+                
         }
 
-        function joinRoom(event) {
-            event.preventDefault();
-            player = {
-                host: false,
-                roomId: document.getElementById("room-join").value,
-                username: document.getElementById("name-join").value,
-                socketId: "",
-                turn: false,
-                win: false,
-                ws: null,
-            };
-            webSocket.send(
-                JSON.stringify({
-                    event: "joinRoom",
-                    data: { player: player },
-                })
-            );
+            //Actions
 
-            document.getElementById("join-game-div").style.display = "none";
-            document.getElementById("in-game-div").style.display = "block";
-            document.getElementById("startGame").style.display = "none";
+            document
+                .getElementById("sendChat")
+                .addEventListener("click", sendChat);
 
-        }
+            document
+                .getElementById("createRoom")
+                .addEventListener("click", createRoom);
 
-        function sendChat(event) {
-            event.preventDefault();
-            webSocket.send(
-                JSON.stringify({
-                    event: "sendChat",
-                    data: { senderPlayer: player, sendChat: document.getElementById('chat-message').value },
-                })
-            );
-            console.log(player);
-        }
+            document
+                .getElementById("joinRoom")
+                .addEventListener("click", joinRoom);
 
-        function leaveRoom(event) {
-            event.preventDefault();
-            webSocket.send(
-                JSON.stringify({
-                    event: "leaveRoom",
-                    data: { player: player, senderPlayer: player },
-                })
-            );
-            document.getElementById("party").innerHTML = ""
-            document.getElementById("join-game-div").style.display = "block";
-            document.getElementById("in-game-div").style.display = "none";
-        }
+            document
+                .getElementById("leaveRoom")
+                .addEventListener("click", leaveRoom);
 
-        function startGame(event) {
-            event.preventDefault();
-            webSocket.send(
-                JSON.stringify({
-                    event: "startGame",
-                    data: { player: player },
-                })
-            );
-        }
+            document
+                .getElementById("startGame")
+                .addEventListener("click", startGame);
 
-        function emitBet(event) {
-            event.preventDefault();
-            webSocket.send(
-                JSON.stringify({
-                    event: "emitBet",
-                    data: { player: player, bet: document.getElementById('player-bet').value},
-                })
-            );
-        }
-
-        function playerListConstructor(data){
-            document.getElementById("join-game-div").style.display = "none";
-            document.getElementById("in-game-div").style.display = "block";
-            document.getElementById("players-list").innerHTML = "";
-            data.room.players.forEach(p => {
-                console.log(p.socketId+" - "+data.player.socketId);
-                console.log(p.socketId == data.player.socketId);
-                let score = ""
-                console.log(`score: ${p.score}`)
-                if(p.score != null) {
-                    score=p.score
-                }
-                if(p.socketId == data.player.socketId){
-                    document.getElementById("players-list").innerHTML += `<b>${p.username}</b> ${score}` ;
-                } else {
-                    document.getElementById("players-list").innerHTML += `${p.username} ${score}`;
-                }
-                if(p.host){
-                    document.getElementById("players-list").innerHTML += `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-                    </svg> `
-                }
-                console.log("emitBet : "+p.emitBet);
-                if(p.emitBet){
-                    document.getElementById("players-list").innerHTML += `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                    </svg>`
-                }
-                document.getElementById("players-list").innerHTML += "<br>" ;
-            })
-        }
-
-        //Actions
-
-        document
-            .getElementById("sendChat")
-            .addEventListener("click", sendChat);
-
-        document
-            .getElementById("createRoom")
-            .addEventListener("click", createRoom);
-
-        document
-            .getElementById("joinRoom")
-            .addEventListener("click", joinRoom);
-
-        document
-            .getElementById("leaveRoom")
-            .addEventListener("click", leaveRoom);
-
-        document
-            .getElementById("startGame")
-            .addEventListener("click", startGame);
-
-        document
-            .getElementById("emitBet")
-            .addEventListener("click", emitBet);
-
-    </script>
-</body>
-
+            document
+                .getElementById("emitBet")
+                .addEventListener("click", emitBet);
+        </script>
+    </body>
 </html>
