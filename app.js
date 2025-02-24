@@ -125,11 +125,19 @@ wss.on("connection", function connection(ws) {
             console.log(`[SERVER] Event - ${event} - ${room.id} - ${senderPlayer.username}`);
             if (room.players.every(p => p.emitBet === true)) {
                 //startPlayingHand(); 
-            
+                //room.players = shufflePlayers(room.players);
+                room.players[0].turn = true;
+
                 room.players.forEach(p => {
-                    const sendData = JSON.stringify({ event: "startPlayingHand", data: { player: p, senderPlayer: senderPlayer, room: room } });
+                    p.emitBet = false;
+                })
+
+                room.players.forEach(p => {
+                    const sendData = JSON.stringify({ event: "startPlayingHand", data: { player: p, senderPlayer: room.players[0],  room: room } });
                     p.ws.send(sendData);
                 });
+            
+                
                 console.log(`[SERVER] Event - startPlayingHand - ${room.id} - ${room.players[0].username}`);
             }
             
@@ -231,7 +239,7 @@ function startRound(room){
 function initAndShuffleDeck(){
     let deck = [];
 
-    const suits = ["yellow", "red", "green", "black"];
+    const suits = ["yellow", "purple", "green", "black"];
     const heads = [{suit: "Skull King", value:100},{suit: "Pirate", value:100},{suit: "Pirate", value:100},{suit: "Pirate", value:100},{suit: "Pirate", value:100},{suit: "Pirate", value:100},{suit: "Sirène", value:100},{suit: "Sirène", value:100},{suit: "Drapeau blanc", value:0}];
 
     // Remplir le deck avec les cartes
@@ -267,6 +275,18 @@ function dealCards(room){
     }
     room.players.forEach(p => p.cards.forEach(card => console.log(`[SERVER] - Deal Cards - ${p.username} - ${card.suit} : ${card.value}`)))
     return room;
+}
+
+function shufflePlayers(players){
+
+    for (let i = players.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        let change = players[i]
+        players[i] = players[j]
+        players[j] = change
+    }
+
+    return players
 }
 
 function outputRooms() {
